@@ -20,11 +20,23 @@
 
 ### 3. 获取访问凭证
 
+**重要：** 阿里云容器镜像服务需要使用 **AccessKey** 进行认证
+
+#### 方法一：使用 AccessKey（推荐）
+
 1. 在阿里云控制台，点击右上角头像 → "AccessKey管理"
 2. 创建 AccessKey（如果还没有）
 3. 记录 **AccessKey ID** 和 **AccessKey Secret**
 
 ⚠️ **安全提示**：AccessKey Secret 只显示一次，请妥善保存
+
+#### 方法二：使用 Docker 登录密码（如果启用了）
+
+1. 进入"容器镜像服务 ACR" → "访问凭证"
+2. 设置 Docker 登录密码
+3. 使用你的阿里云账号和设置的密码登录
+
+**注意：** 推荐使用方法一（AccessKey），更安全且更灵活
 
 ## 配置 GitHub Secrets
 
@@ -38,13 +50,27 @@
 
    | Secret 名称 | 值 | 说明 |
    |------------|-----|------|
-   | `ALIYUN_USERNAME` | 你的 AccessKey ID | 阿里云 AccessKey ID |
+   | `ALIYUN_USERNAME` | 你的 AccessKey ID | 阿里云 AccessKey ID（不是账号名） |
    | `ALIYUN_PASSWORD` | 你的 AccessKey Secret | 阿里云 AccessKey Secret |
 
-**优点：**
-- 配置简单，所有工作流都可以使用
-- 适合单个仓库的场景
-- 不需要额外的环境配置
+**重要提示：**
+- `ALIYUN_USERNAME` 必须是 **AccessKey ID**，不是你的阿里云账号邮箱
+- `ALIYUN_PASSWORD` 必须是 **AccessKey Secret**，不是账号密码
+- 确保 AccessKey 有容器镜像服务的读写权限
+
+### 验证 AccessKey 权限
+
+1. 登录阿里云控制台
+2. 进入"访问控制 RAM" → "用户"
+3. 找到对应的用户
+4. 检查是否有以下权限：
+   - `AliyunContainerRegistryFullAccess`（容器镜像服务全部权限）
+   - 或至少 `AliyunContainerRegistryReadWriteAccess`（读写权限）
+
+如果没有权限，需要：
+1. 进入"访问控制 RAM" → "用户"
+2. 点击用户 → "添加权限"
+3. 添加 `AliyunContainerRegistryFullAccess` 权限
 
 ### Environment Secrets（可选，适合多环境）
 
@@ -82,9 +108,19 @@
 ```yaml
 env:
   REGISTRY: registry.cn-hangzhou.aliyuncs.com  # 根据你的地域选择
-  NAMESPACE: your-namespace                    # 改为你的命名空间
-  IMAGE_NAME: ai-travel-planner
+  NAMESPACE: your-namespace                    # ⚠️ 改为你的阿里云命名空间名称
+  IMAGE_NAME: ai-travel-planner                # ⚠️ 改为你的阿里云镜像仓库名称
 ```
+
+**重要说明：**
+- `NAMESPACE`：必须是你在**阿里云容器镜像服务**中创建的**命名空间**名称
+- `IMAGE_NAME`：必须是你在**阿里云容器镜像服务**中创建的**镜像仓库**名称
+- ⚠️ 这两个名称是**阿里云**上的配置，**不是** GitHub 仓库名称
+
+**查找方法：**
+1. 登录阿里云控制台
+2. 进入"容器镜像服务 ACR" → "命名空间" → 查看你的命名空间名称
+3. 进入"容器镜像服务 ACR" → "镜像仓库" → 查看你的仓库名称
 
 **可用的阿里云镜像仓库地址：**
 - `registry.cn-hangzhou.aliyuncs.com` - 华东1（杭州）
@@ -92,20 +128,35 @@ env:
 - `registry.cn-beijing.aliyuncs.com` - 华北2（北京）
 - `registry.cn-shenzhen.aliyuncs.com` - 华南1（深圳）
 
+**示例：**
+假设你在阿里云上：
+- 命名空间名称：`space_7thpark`
+- 镜像仓库名称：`llm4se`
+
+那么配置应该是：
+```yaml
+env:
+  REGISTRY: registry.cn-hangzhou.aliyuncs.com
+  NAMESPACE: space_7thpark
+  IMAGE_NAME: llm4se
+```
+
+最终推送的镜像地址将是：`registry.cn-hangzhou.aliyuncs.com/space_7thpark/llm4se:latest`
+
 ## 使用方式
 
-### 方式一：推送到 main 分支自动构建
+### 方式一：推送到 travel_planner 分支自动构建
 
 ```bash
 git add .
 git commit -m "feat: add docker build workflow"
-git push origin main
+git push origin travel_planner
 ```
 
 推送后，GitHub Actions 会自动：
 1. 构建 Docker 镜像
 2. 推送到阿里云镜像仓库
-3. 标签为 `latest` 和 commit SHA
+3. 标签为 `travel_planner` 和 commit SHA
 
 ### 方式二：手动触发构建
 
@@ -171,18 +222,33 @@ docker run -d -p 3000:80 \
 
 ## 常见问题
 
-### 1. 构建失败：认证失败
+### 1. 认证失败：unauthorized: authentication required
+
+**可能原因：**
+- AccessKey ID 或 Secret 不正确
+- AccessKey 没有容器镜像服务的权限
+- 使用了错误的用户名（应该用 AccessKey ID，不是账号邮箱）
 
 **解决方案：**
-- 检查 GitHub Secrets 是否正确配置
-- 确认 AccessKey ID 和 Secret 是否正确
-- 确认命名空间和仓库名称是否正确
+1. 检查 GitHub Secrets 中的值是否正确
+2. 确认使用的是 AccessKey ID（不是账号邮箱）
+3. 确认 AccessKey Secret 正确（注意不要有多余的空格）
+4. 检查 AccessKey 是否有容器镜像服务的权限
+5. 尝试重新创建 AccessKey
+
+**验证方法：**
+```bash
+# 在本地测试登录
+docker login --username=你的AccessKey_ID registry.cn-hangzhou.aliyuncs.com
+# 输入 AccessKey Secret
+```
 
 ### 2. 推送失败：权限不足
 
 **解决方案：**
 - 确认 AccessKey 有容器镜像服务的读写权限
 - 检查命名空间是否为当前账号所有
+- 确认镜像仓库已创建
 
 ### 3. 构建超时
 
@@ -193,7 +259,7 @@ docker run -d -p 3000:80 \
 
 ### 4. 如何更新镜像
 
-只需推送代码到 main 分支，GitHub Actions 会自动构建新镜像。
+只需推送代码到 travel_planner 分支，GitHub Actions 会自动构建新镜像。
 
 ## 镜像使用示例
 
@@ -241,4 +307,4 @@ spec:
 2. **定期轮换密钥**：定期更换 AccessKey
 3. **限制访问权限**：只给必要的账号授权
 4. **监控使用情况**：定期检查镜像仓库的访问日志
-
+5. **不要泄露 AccessKey**：永远不要在代码中硬编码 AccessKey

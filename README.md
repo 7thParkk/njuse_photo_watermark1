@@ -110,11 +110,17 @@ npm run build
    ```yaml
    env:
      NAMESPACE: your-namespace  # 改为你的阿里云命名空间
+     IMAGE_NAME: ai-travel-planner  # 改为你的镜像仓库名称
    ```
 
-3. 推送代码到 main 分支，GitHub Actions 会自动构建并推送镜像
+3. 推送代码到 travel_planner 分支，GitHub Actions 会自动构建并推送镜像
 
 **详细配置说明请参考：** [GITHUB_ACTIONS.md](./GITHUB_ACTIONS.md)
+
+**⚠️ 常见问题：** 如果遇到认证失败，请确保：
+- 使用 AccessKey ID（不是账号邮箱）作为 `ALIYUN_USERNAME`
+- 使用 AccessKey Secret（不是账号密码）作为 `ALIYUN_PASSWORD`
+- AccessKey 有容器镜像服务的读写权限
 
 ### 方式二：本地构建
 

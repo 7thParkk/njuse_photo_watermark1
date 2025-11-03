@@ -25,6 +25,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
+          logout: false
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
