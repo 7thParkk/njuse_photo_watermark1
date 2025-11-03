@@ -1,0 +1,42 @@
+# Docker 忽略文件
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.local
+.env.production.local
+.env.development.local
+.vscode
+.idea
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage
+.nyc_output
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 文档文件（可选，如果需要可以保留）
+# README.md
+# 开发说明.md
+# 实现计划.md
+# 功能测试指南.md
+# 快速测试清单.md
+# 测试总结.md
+# 测试计划.md
+# 浏览器控制台测试脚本.js
+# 空白页面排查指南.md
+# 调试完成说明.md
+# 调试脚本.js
+# 项目总结.md
+
+# API 密钥文件
+prepare.md
+

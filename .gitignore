@@ -34,3 +34,9 @@ dist-ssr
 # API keys and secrets
 prepare.md
 
+# Docker
+*.tar
+*.tar.gz
+ai-travel-planner.tar
+ai-travel-planner.tar.gz
+
