@@ -4,13 +4,14 @@ import { getApiConfig } from '../utils/config';
 
 // 科大讯飞语音识别服务
 export class VoiceService {
-  private config: ReturnType<typeof getApiConfig>['xunfei'];
+  private config: ReturnType<typeof getApiConfig<'xunfei'>>;
 
   constructor() {
     this.config = getApiConfig('xunfei');
   }
 
-  // 生成WebSocket认证URL
+  // 生成WebSocket认证URL（未使用，保留用于未来实现）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private generateAuthUrl(): string {
     if (!this.config) {
       throw new Error('科大讯飞API配置未设置');
@@ -30,7 +31,8 @@ export class VoiceService {
     return `wss://${host}${path}?authorization=${authorization}&date=${encodeURIComponent(date)}&host=${host}`;
   }
 
-  // 将音频转换为base64
+  // 将音频转换为base64（未使用，保留用于未来实现）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async audioToBase64(audioBlob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -53,7 +55,7 @@ export class VoiceService {
     // 这里提供一个基础实现框架
     // 实际使用时需要处理音频格式转换（PCM 16bit 16kHz）和流式传输
     
-    return new Promise((resolve, reject) => {
+    return new Promise((_resolve, reject) => {
       // 由于浏览器端WebSocket实现复杂，这里提供一个简化的实现
       // 实际项目中建议使用后端服务来处理语音识别
       
@@ -81,7 +83,7 @@ export class VoiceService {
 
 // 高德地图服务
 export class MapService {
-  private config: ReturnType<typeof getApiConfig>['amap'];
+  private config: ReturnType<typeof getApiConfig<'amap'>>;
 
   constructor() {
     this.config = getApiConfig('amap');
@@ -149,7 +151,7 @@ export class MapService {
 
 // AI服务（大语言模型）
 export class AIService {
-  private config: ReturnType<typeof getApiConfig>['ai'];
+  private config: ReturnType<typeof getApiConfig<'ai'>>;
 
   constructor() {
     this.config = getApiConfig('ai');

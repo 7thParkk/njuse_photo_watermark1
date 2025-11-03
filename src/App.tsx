@@ -9,7 +9,6 @@ import Settings from './pages/Settings';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
-  const [error, setError] = useState<string | null>(null);
   const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,27 +33,6 @@ function App() {
     };
     init();
   }, [checkAuth, loading]);
-
-  // 如果有错误，显示错误信息
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">初始化错误</h1>
-          <p className="text-gray-700 mb-4">{error}</p>
-          <p className="text-sm text-gray-500 mb-4">
-            请检查浏览器控制台（F12）获取更多信息
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
-          >
-            刷新页面
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // 如果有初始化错误，显示错误信息
   if (initError) {
