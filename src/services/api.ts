@@ -10,40 +10,6 @@ export class VoiceService {
     this.config = getApiConfig('xunfei');
   }
 
-  // 生成WebSocket认证URL（未使用，保留用于未来实现）
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private generateAuthUrl(): string {
-    if (!this.config) {
-      throw new Error('科大讯飞API配置未设置');
-    }
-
-    const host = 'iat-api.xfyun.cn';
-    const path = '/v2/iat';
-    const date = new Date().toUTCString();
-    const algorithm = 'hmac-sha256';
-    const headers = 'host date request-line';
-    const signatureOrigin = `host: ${host}\ndate: ${date}\nGET ${path} HTTP/1.1`;
-    const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
-    const signature = CryptoJS.enc.Base64.stringify(signatureSha);
-    const authorizationOrigin = `api_key="${this.config.apiKey}", algorithm="${algorithm}", headers="${headers}", signature="${signature}"`;
-    const authorization = btoa(authorizationOrigin);
-
-    return `wss://${host}${path}?authorization=${authorization}&date=${encodeURIComponent(date)}&host=${host}`;
-  }
-
-  // 将音频转换为base64（未使用，保留用于未来实现）
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private async audioToBase64(audioBlob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
-        resolve(base64.split(',')[1]); // 移除data:audio/wav;base64,前缀
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(audioBlob);
-    });
-  }
 
   // 识别语音（简化版本，实际需要使用WebSocket流式传输）
   async recognize(audioBlob: Blob): Promise<string> {
