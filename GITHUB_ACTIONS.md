@@ -24,19 +24,86 @@
 
 #### 方法一：使用 AccessKey（推荐）
 
-1. 在阿里云控制台，点击右上角头像 → "AccessKey管理"
-2. 创建 AccessKey（如果还没有）
-3. 记录 **AccessKey ID** 和 **AccessKey Secret**
+**步骤 1：登录阿里云控制台**
 
-⚠️ **安全提示**：AccessKey Secret 只显示一次，请妥善保存
+1. 访问 https://ecs.console.aliyun.com/
+2. 使用你的阿里云账号登录
 
-#### 方法二：使用 Docker 登录密码（如果启用了）
+**步骤 2：进入 AccessKey 管理页面**
+
+有两种方式：
+
+**方式 A：通过右上角头像**
+1. 点击页面右上角的**头像图标**
+2. 在下拉菜单中选择 **"AccessKey管理"**
+
+**方式 B：直接访问**
+1. 访问 https://ram.console.aliyun.com/manage/ak
+2. 会提示你登录（如果未登录）
+
+**步骤 3：创建 AccessKey**
+
+1. 在 AccessKey 管理页面，你会看到：
+   - 如果已经有 AccessKey，会显示已有的 AccessKey ID
+   - 如果没有，会显示"创建 AccessKey"按钮
+
+2. 点击 **"创建 AccessKey"** 按钮
+
+3. 安全验证：
+   - 可能需要输入手机验证码或进行其他安全验证
+   - 完成验证后，会显示 AccessKey 信息
+
+4. **重要：保存 AccessKey 信息**
+   - **AccessKey ID**：类似于 `LTAI5txxxxxxxxxxxxx`（会一直显示）
+   - **AccessKey Secret**：类似于 `xxxxxxxxxxxxxxxxxxxxxxxxxxxx`（**只显示一次**，必须立即保存）
+
+⚠️ **安全提示**：
+- AccessKey Secret **只显示一次**，关闭页面后无法再次查看
+- 请立即复制并安全保存 AccessKey ID 和 Secret
+- 建议将 Secret 保存在密码管理器或安全的地方
+- 不要将 AccessKey 提交到代码仓库
+
+**步骤 4：验证 AccessKey 权限**
+
+创建 AccessKey 后，需要确保它有容器镜像服务的权限：
+
+1. 进入"访问控制 RAM" → "用户"
+2. 找到你的用户（通常是主账号）
+3. 点击用户名进入详情页
+4. 查看"权限"标签页
+5. 确认是否有以下权限之一：
+   - `AliyunContainerRegistryFullAccess`（容器镜像服务全部权限）**推荐**
+   - `AliyunContainerRegistryReadWriteAccess`（读写权限）
+
+**如果没有权限，添加权限：**
+
+1. 在用户详情页，点击 **"添加权限"** 按钮
+2. 选择 **"为当前用户授权"**
+3. 在权限策略列表中，搜索 `ContainerRegistry`
+4. 勾选 `AliyunContainerRegistryFullAccess`
+5. 点击 **"确定"** 完成授权
+
+**步骤 5：测试 AccessKey（可选但推荐）**
+
+在本地测试 AccessKey 是否可以正常使用：
+
+```bash
+# 使用你的 AccessKey ID 和 Secret 登录
+docker login --username=你的AccessKey_ID registry.cn-hangzhou.aliyuncs.com
+# 输入密码时粘贴 AccessKey Secret
+```
+
+如果登录成功，说明 AccessKey 配置正确。
+
+#### 方法二：使用 Docker 登录密码（不推荐）
+
+如果你启用了 Docker 登录密码功能：
 
 1. 进入"容器镜像服务 ACR" → "访问凭证"
 2. 设置 Docker 登录密码
 3. 使用你的阿里云账号和设置的密码登录
 
-**注意：** 推荐使用方法一（AccessKey），更安全且更灵活
+**注意：** 推荐使用方法一（AccessKey），更安全且更灵活，GitHub Actions 也需要使用 AccessKey。
 
 ## 配置 GitHub Secrets
 
