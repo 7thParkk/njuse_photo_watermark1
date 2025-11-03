@@ -3,8 +3,7 @@ name: Build and Push Docker Image to Aliyun (Simple)
 on:
   push:
     branches:
-      - main
-      - master
+      - travel_planner
   workflow_dispatch:
 
 env:
